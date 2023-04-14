@@ -102,24 +102,27 @@ emojis=[
     ["lemon","🍋"],
     ["tomato", "🍅"],
     ["banana","🍌"]
-    
+
 ]
 
 for emoji in emojis:
 
-    os.makedirs('/media/enric/enric_hdd/datasets/emoji_trends/emojis_raw/' + emoji[0], exist_ok=True)
+    os.makedirs(
+        f'/media/enric/enric_hdd/datasets/emoji_trends/emojis_raw/{emoji[0]}',
+        exist_ok=True,
+    )
 
 
     for i in range(days_number):
 
         next_date = start_date + datetime.timedelta(days=i+1)
-        next_year = str(next_date.year).zfill(4) 
-        next_month = str(next_date.month).zfill(2) 
+        next_year = str(next_date.year).zfill(4)
+        next_month = str(next_date.month).zfill(2)
         next_day = str(next_date.day).zfill(2) 
 
         current_date = start_date + datetime.timedelta(days=i)
-        current_year = str(current_date.year).zfill(4) 
-        current_month = str(current_date.month).zfill(2) 
+        current_year = str(current_date.year).zfill(4)
+        current_month = str(current_date.month).zfill(2)
         current_day = str(current_date.day).zfill(2) 
 
 
@@ -128,17 +131,14 @@ for emoji in emojis:
             print('waiting for workers...')
             time.sleep(1)
             lavg = psutil.getloadavg()[0]
-            
 
 
-        
 
-        os.system('python3 Exporter.py --lang "en" --querysearch "{}" --maxtweets 100000000 --output={}.csv --since {}-{}-{} --until {}-{}-{} &'.format(
-            emoji[1],
-            '/media/enric/enric_hdd/datasets/emoji_trends/emojis_raw/{}/{}_{}-{}-{}'.format(emoji[0], emoji[0], current_year, current_month, current_day),
-            current_year,current_month,current_day,
-            next_year,next_month,next_day
-        ))
 
-        print("{} worker {} created".format(emoji[1], i))
+
+        os.system(
+            f'python3 Exporter.py --lang "en" --querysearch "{emoji[1]}" --maxtweets 100000000 --output=/media/enric/enric_hdd/datasets/emoji_trends/emojis_raw/{emoji[0]}/{emoji[0]}_{current_year}-{current_month}-{current_day}.csv --since {current_year}-{current_month}-{current_day} --until {next_year}-{next_month}-{next_day} &'
+        )
+
+        print(f"{emoji[1]} worker {i} created")
         time.sleep(0.5)

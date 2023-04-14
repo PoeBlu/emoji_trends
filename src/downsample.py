@@ -8,11 +8,9 @@ def downsample(source_path, output_path, factor):
         dates = []
         csvf = csv.reader(f, delimiter=',')
         next(f)
-        count = 0
-        for row in csvf:
+        for count, row in enumerate(csvf):
             dates.append(row[0])
             data.append([count, int(row[1])])
-            count+=1
         sampled = largest_triangle_three_buckets(data, factor)
         with open(output_path, 'w') as f2:
             csvf2 = csv.writer(f2, delimiter=',', quoting=csv.QUOTE_NONE, escapechar=' ')

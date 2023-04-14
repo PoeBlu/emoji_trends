@@ -8,10 +8,10 @@ origin = 'whathappened/beer_no_header.csv'
 target = 'whathappened/beer_day.csv'
 
 print('Filtering day...')
-os.system("awk '/{}/' {} > {}".format(date, origin, target))
+os.system(f"awk '/{date}/' {origin} > {target}")
 # Add header
 header='"username","date","retweets","favorites","text","geo","mentions","hashtags","id","permalink","emoji"'
-os.system("sed -i '1 i\{}' {}".format(header, target))
+os.system(f"sed -i '1 i\{header}' {target}")
 
 print('Reading day...')
 df = pd.read_csv("whathappened/beer_day.csv")

@@ -16,10 +16,8 @@ def main(argv):
         return
 
     if len(argv) == 1 and argv[0] == '-h':
-        f = open('exporter_help_text.txt', 'r')
-        print(f.read())
-        f.close()
-
+        with open('exporter_help_text.txt', 'r') as f:
+            print(f.read())
         return
 
     try:
@@ -49,10 +47,10 @@ def main(argv):
                 tweetCriteria.maxTweets = int(arg)
 
             elif opt == '--near':
-                tweetCriteria.near = '"' + arg + '"'
+                tweetCriteria.near = f'"{arg}"'
 
             elif opt == '--within':
-                tweetCriteria.within = '"' + arg + '"'
+                tweetCriteria.within = f'"{arg}"'
 
             elif opt == '--output':
                 outputFileName = arg
@@ -73,10 +71,7 @@ def main(argv):
                 # print("> Tweets :" + t.text + "\n\n")
                 add_list = []
                 # print(t.emojis)
-                if (isinstance(t.emojis, list)):
-                    emoji = ' '.join(t.emojis)
-                else:
-                    emoji = t.emojis
+                emoji = ' '.join(t.emojis) if (isinstance(t.emojis, list)) else t.emojis
                 # print(emoji)
                 # print(t.text)
                 for each in [t.username, t.date.strftime("%Y-%m-%d %H:%M"), t.retweets, t.favorites, t.text, t.geo, t.mentions, t.hashtags, t.id, t.permalink, emoji]:
@@ -92,14 +87,15 @@ def main(argv):
                 # print(add_list)
                 # print('\n\n\n\n')
                 outputFile.writerow(add_list)
-            # print('%d tweets saved on file...\n' % len(tweets))
+                    # print('%d tweets saved on file...\n' % len(tweets))
+
 
         got.manager.TweetManager.getTweets(tweetCriteria, receiveBuffer)
 
     except arg:
-        print('Arguments parse error, try -h' + arg)
+        print(f'Arguments parse error, try -h{arg}')
     finally:
-        print('Done. Output file generated "%s".' % outputFileName)
+        print(f'Done. Output file generated "{outputFileName}".')
 
 
 if __name__ == '__main__':

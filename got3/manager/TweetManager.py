@@ -51,11 +51,7 @@ class TweetManager:
                     tweet = models.Tweet()
 
                     uTweet = tweetPQ("span.username.u-dir.u-textTruncate b").text()
-                    if (' ' in uTweet) == True:
-                        # split and get first index
-                        usernameTweet = uTweet.split(' ')[0]
-                    else:
-                        usernameTweet = uTweet
+                    usernameTweet = uTweet.split(' ')[0] if ' ' in uTweet else uTweet
                     emojis = []
                     i = 0
                     for emoji in tweetPQ("p.js-tweet-text img"):
@@ -92,7 +88,7 @@ class TweetManager:
                         except KeyError:
                             pass
                     tweet.id = id
-                    tweet.permalink = 'https://twitter.com' + permalink
+                    tweet.permalink = f'https://twitter.com{permalink}'
                     tweet.username = usernameTweet
 
                     tweet.text = text
@@ -132,25 +128,25 @@ class TweetManager:
 
         urlGetData = ''
         if hasattr(tweetCriteria, 'username'):
-            urlGetData += ' from:' + tweetCriteria.username
+            urlGetData += f' from:{tweetCriteria.username}'
 
         if hasattr(tweetCriteria, 'since'):
-            urlGetData += ' since:' + tweetCriteria.since
+            urlGetData += f' since:{tweetCriteria.since}'
 
         if hasattr(tweetCriteria, 'until'):
-            urlGetData += ' until:' + tweetCriteria.until
+            urlGetData += f' until:{tweetCriteria.until}'
 
         if hasattr(tweetCriteria, 'querySearch'):
-            urlGetData += ' ' + tweetCriteria.querySearch
+            urlGetData += f' {tweetCriteria.querySearch}'
 
         if hasattr(tweetCriteria, 'lang'):
-            urlLang = 'l=' + tweetCriteria.lang + '&'
+            urlLang = f'l={tweetCriteria.lang}&'
 
         if hasattr(tweetCriteria, 'near'):
-            urlGetData += "&near:" + tweetCriteria.near + " within:" + tweetCriteria.within
+            urlGetData += f"&near:{tweetCriteria.near} within:{tweetCriteria.within}"
         else:
             urlLang = ''
-        url = url % (urllib.parse.quote(urlGetData), urlLang, refreshCursor)
+        url %= (urllib.parse.quote(urlGetData), urlLang, refreshCursor)
         # print(url)
 
         headers = [
@@ -174,10 +170,12 @@ class TweetManager:
             jsonResponse = response.read()
             dataJson = json.loads(jsonResponse.decode())
         except:
-            print("Twitter weird response. Try to see on browser: https://twitter.com/search?q=%s&src=typd" % urllib.parse.quote(urlGetData))
+            print(
+                f"Twitter weird response. Try to see on browser: https://twitter.com/search?q={urllib.parse.quote(urlGetData)}&src=typd"
+            )
             print("Unexpected error:", sys.exc_info()[0])
             return 'errorJSON'
 
-        
+
 
         return dataJson

@@ -2,7 +2,7 @@ import pandas as pd
 import math
 
 print('Loading data...')
-data = pd.read_csv("spainsmall.csv") 
+data = pd.read_csv("spainsmall.csv")
 print(data.shape)
 
 total=0
@@ -17,7 +17,8 @@ for i, line in enumerate(data['emoji']):
             count+=1
     except:
         emoji+=1
-print(str(count) + ' / ' + str(total) + ' -- ' + str(emoji))
+print(f'{str(count)} / {str(total)} -- {str(emoji)}')
 print(data.shape)
 data.to_csv("spain_clean.csv", index=True, encoding='utf8')
-import pdb;pdb.set_trace()
+import pdb
+pdb.set_trace()

@@ -57,13 +57,13 @@ def largest_triangle_three_buckets(data, threshold):
 
     sampled = [data[0]]  # Always add the first point
 
-    for i in range(0, threshold - 2):
+    for i in range(threshold - 2):
         # Calculate point average for next bucket (containing c)
         avg_x = 0
         avg_y = 0
         avg_range_start = int(math.floor((i + 1) * every) + 1)
         avg_range_end = int(math.floor((i + 2) * every) + 1)
-        avg_rang_end = avg_range_end if avg_range_end < len(data) else len(data)
+        avg_rang_end = min(avg_range_end, len(data))
 
         avg_range_length = avg_rang_end - avg_range_start
 

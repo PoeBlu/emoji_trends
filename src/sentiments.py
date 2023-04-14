@@ -6,7 +6,7 @@ from textblob import TextBlob
 
 
 def get_all_dates(name):
-    with open('/media/enric/enric_hdd/datasets/emoji_trends/emojis_50/{}.csv'.format(name), 'r') as f:
+    with open(f'/media/enric/enric_hdd/datasets/emoji_trends/emojis_50/{name}.csv', 'r') as f:
         data = []
         dates = []
         response = []
@@ -21,28 +21,30 @@ def get_all_dates(name):
 
 def get_tweets_on_date(date, name):
 
-    os.system("awk '/{}/' {} > {}".format(date, '/media/enric/enric_hdd/datasets/emoji_trends/clean_emojis/{}_no_header.csv'.format(name), 'tmp/{}_day.csv'.format(name)))
+    os.system(
+        f"awk '/{date}/' /media/enric/enric_hdd/datasets/emoji_trends/clean_emojis/{name}_no_header.csv > tmp/{name}_day.csv"
+    )
     # Add header
     header='"username","date","retweets","favorites","text","geo","mentions","hashtags","id","permalink","emoji"'
-    os.system("sed -i '1 i\{}' {}".format(header, 'tmp/{}_day.csv'.format(name)))
+    os.system(f"sed -i '1 i\{header}' tmp/{name}_day.csv")
 
-    tweets = pd.read_csv('tmp/{}_day.csv'.format(name))["text"]
-    os.system('rm {}'.format('tmp/{}_day.csv'.format(name)))
+    tweets = pd.read_csv(f'tmp/{name}_day.csv')["text"]
+    os.system(f'rm tmp/{name}_day.csv')
     return tweets
 
 def analyze(word):
     print(word)
     dates, data = get_all_dates(word)
-    with open('data/sentiment/{}.csv'.format(word), 'w') as f2:
-            csvf2 = csv.writer(f2, delimiter=',', quoting=csv.QUOTE_NONE, escapechar=' ')
-            csvf2.writerow(['day','usage'])
-            for i, day in enumerate(dates):
-                tweets = get_tweets_on_date(day, word)
-                sentiment = TextBlob(tweets.to_string())
-                score = str(sentiment.sentiment.polarity*100 + 100)[:3]
-                if score[-1] == '.':
-                    score=score[:2]+"0"
-                csvf2.writerow([day, str(data[i]) + "." + score])
+    with open(f'data/sentiment/{word}.csv', 'w') as f2:
+        csvf2 = csv.writer(f2, delimiter=',', quoting=csv.QUOTE_NONE, escapechar=' ')
+        csvf2.writerow(['day','usage'])
+        for i, day in enumerate(dates):
+            tweets = get_tweets_on_date(day, word)
+            sentiment = TextBlob(tweets.to_string())
+            score = str(sentiment.sentiment.polarity*100 + 100)[:3]
+            if score[-1] == '.':
+                score=score[:2]+"0"
+            csvf2.writerow([day, f"{str(data[i])}." + score])
 
     
 

@@ -13,23 +13,22 @@ base_path = '/media/enric/enric_hdd/datasets/emoji_trends'
 
 def clean(folder_name):
     print('-----------------')
-    print('Digesting: {}'.format(folder_name))
+    print(f'Digesting: {folder_name}')
 
     print('Merging all CSV files in one...')
-    os.system('cat {}/emojis_raw/{}/* > {}/clean_emojis/{}_unified.csv'.format(base_path, folder_name, base_path, folder_name))
+    os.system(
+        f'cat {base_path}/emojis_raw/{folder_name}/* > {base_path}/clean_emojis/{folder_name}_unified.csv'
+    )
     print('Removing headers...')
     remove = '"username","date","retweets","favorites","text","geo","mentions","hashtags","id","permalink","emoji"'
-    os.system("awk '!/{}/' {}/clean_emojis/{}_unified.csv > temp && mv temp {}/clean_emojis/{}_no_header.csv".format(remove, base_path, folder_name, base_path, folder_name))
+    os.system(
+        f"awk '!/{remove}/' {base_path}/clean_emojis/{folder_name}_unified.csv > temp && mv temp {base_path}/clean_emojis/{folder_name}_no_header.csv"
+    )
 
-    date_dict = {}
-
-    for date in date_array:
-        date_dict[date] = 0
-
+    date_dict = {date: 0 for date in date_array}
     print('Digesting...')
-    with open('{}/clean_emojis/{}_no_header.csv'.format(base_path, folder_name)) as csv_file:
+    with open(f'{base_path}/clean_emojis/{folder_name}_no_header.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
-        line_count = 0
         for row in tqdm(csv_reader):
             try:
                 datetime_object = datetime.datetime.strptime(row[1],'%Y-%m-%d %H:%M').replace(hour=0,minute=0)
@@ -37,17 +36,20 @@ def clean(folder_name):
             except:
                 pass
 
-            line_count +=1
     print('Deleting intermediate files...')
-    os.system('rm {}/clean_emojis/{}_unified.csv'.format(base_path, folder_name))
+    os.system(f'rm {base_path}/clean_emojis/{folder_name}_unified.csv')
     print("Writing CSV...")
-    with open('{}/emojis_3600/{}.csv'.format(base_path, folder_name), mode='w') as f:
+    with open(f'{base_path}/emojis_3600/{folder_name}.csv', mode='w') as f:
         writer = csv.writer(f, delimiter=',')
         writer.writerow(['day,usage'])
         for date in date_array:
             writer.writerow([date.strftime("%Y-%m-%d"), date_dict[date]])
-    
-    downsample('{}/emojis_3600/{}.csv'.format(base_path, folder_name), '{}/emojis_50/{}.csv'.format(base_path, folder_name), downsample_factor)
+
+    downsample(
+        f'{base_path}/emojis_3600/{folder_name}.csv',
+        f'{base_path}/emojis_50/{folder_name}.csv',
+        downsample_factor,
+    )
 
 clean("football")
 clean("bee")
